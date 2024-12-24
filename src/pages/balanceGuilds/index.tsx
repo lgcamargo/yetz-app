@@ -1,34 +1,72 @@
-import { useState } from "react";
-import { BalanceGuildsContainer, Button, Table, TableCell, TableHeader } from "./styles";
+import React from "react";
+import { getGuildsRoute } from "../../services/api/guild";
+import { Guild } from "../../services/api/guild/types";
+import {
+  BalanceGuildsContainer,
+  Button,
+  Table,
+  TableCell,
+  TableHeader,
+  ButtonContainer,
+  StyledInfo,
+  InputContainer,
+} from "./styles";
+import { balancedPlayersRoute, resetPlayersGuildRoute } from "../../services/api/player";
 
 const BalanceGuilds = () => {
-  const [guilds] = useState([
-    {
-      id: "1",
-      name: "Guilda dos Heróis",
-      players: [
-        { name: "João", class: "GUERREIRO", experience: 50 },
-        { name: "Ana", class: "CLÉRICO", experience: 30 },
-      ],
-    },
-    {
-      id: "2",
-      name: "Guilda dos Magos",
-      players: [
-        { name: "Carlos", class: "MAGO", experience: 70 },
-        { name: "Maria", class: "ARQUEIRO", experience: 40 },
-      ],
-    },
-  ]);
+  const [guilds, setGuilds] = React.useState<Guild[]>([]);
+  const [maxPlayers, setMaxPlayers] = React.useState<number>(0);
+
+  React.useEffect(() => {
+    const fetchGuilds = async () => {
+      try {
+        const response = await getGuildsRoute();
+        setGuilds(response);
+      } catch (error) {
+        console.error("Failed to fetch guilds", error);
+      }
+    };
+
+    fetchGuilds();
+  }, []);
 
   const generateBalancedGuilds = () => {
-    console.log("Gerando guildas balanceadas...");
+    console.log('maxPLayers', maxPlayers)
+    balancedPlayersRoute(maxPlayers).then((response) => {
+      setGuilds(response);
+    }).catch((error) => {
+      console.error("Failed to generate balanced guilds", error);
+    });
   };
 
+  const resetGuilds = async () => {
+    try {
+      await resetPlayersGuildRoute();
+      const response = await getGuildsRoute();
+      setGuilds(response);
+    } catch (error) {
+      console.error("Failed to reset guilds", error);
+    }
+  };
+  
   return (
     <BalanceGuildsContainer>
       <h1>Guildas Balanceadas</h1>
-      <Button onClick={generateBalancedGuilds}>Gerar Guildas Balanceadas</Button>
+      <StyledInfo>
+        <ButtonContainer>
+          <Button onClick={generateBalancedGuilds}>Gerar Guildas Balanceadas</Button>
+          <Button onClick={resetGuilds}>Resetar guildas</Button>
+        </ButtonContainer>
+        <InputContainer>
+          {'Selecione o número máximo de players (mínimo 3):'}
+          <input
+            type="number"
+            id="maxPlayers"
+            name="maxPlayers"
+            onChange={(e) => setMaxPlayers(Number(e.target.value))}
+          />
+        </InputContainer>
+      </StyledInfo>
       <Table>
         <thead>
           <tr>

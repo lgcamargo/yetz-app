@@ -8,6 +8,8 @@ import {
   FormsContainer,
   ButtonContainer,
 } from "./styles";
+import { createPlayerRoute } from "../../services/api/player";
+import { ClassEnum, CreatePlayer as CreateType } from "../../services/api/player/types";
 
 const CreatePlayer = () => {
   const [name, setName] = useState("");
@@ -18,13 +20,15 @@ const CreatePlayer = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const newPlayer = {
+    const newPlayer: CreateType = {
       name,
-      class: className,
+      class: className as ClassEnum,
       experience,
     };
-    console.log("Novo Player Criado:", newPlayer);
-    // call api create player
+    createPlayerRoute(newPlayer).then(() => {
+      alert("Player created successfully!");
+      navigate("/");
+    });
   };
 
   const handleGoBack = () => {

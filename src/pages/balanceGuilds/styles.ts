@@ -19,6 +19,27 @@ export const TableCell = styled.td`
   border: 1px solid #ddd;
 `;
 
+export const ButtonContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 10px;
+`;
+
+export const InputContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 10px;
+`;
+
+export const StyledInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-left: 20px;
+`;
+
 export const Button = styled.button`
   background-color: #4caf50;
   color: white;

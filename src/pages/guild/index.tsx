@@ -7,6 +7,8 @@ import {
   FormsContainer
 } from "./styles";
 import { useNavigate } from "react-router-dom";
+import { CreateGuild as CreateType } from "../../services/api/guild/types";
+import { createGuildRoute } from "../../services/api/guild";
 
 const CreateGuild = () => {
   const [guildName, setGuildName] = useState("");
@@ -15,10 +17,13 @@ const CreateGuild = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const newGuild = {
+    const newGuild: CreateType = {
       name: guildName,
     };
-    console.log("Nova Guilda Criada:", newGuild);
+    createGuildRoute(newGuild).then(() => {
+      alert("Guild created successfully!");
+      navigate("/");
+    });
   };
 
   
