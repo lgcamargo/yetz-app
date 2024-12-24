@@ -11,11 +11,16 @@ import {
   StyledInfo,
   InputContainer,
 } from "./styles";
-import { balancedPlayersRoute, resetPlayersGuildRoute } from "../../services/api/player";
+import { balancedPlayersRoute, getPlayersRoute, resetPlayersGuildRoute } from "../../services/api/player";
+import { useNavigate } from "react-router-dom";
+import { Player } from "../../services/api/player/types";
 
 const BalanceGuilds = () => {
   const [guilds, setGuilds] = React.useState<Guild[]>([]);
+  const [outPlayers, setOutPlayers] = React.useState<Player[]>([]);
   const [maxPlayers, setMaxPlayers] = React.useState<number>(0);
+
+  const navigate = useNavigate();
 
   React.useEffect(() => {
     const fetchGuilds = async () => {
@@ -27,11 +32,20 @@ const BalanceGuilds = () => {
       }
     };
 
+    const fetchPlayers = async () => {
+      try {
+        const response = await getPlayersRoute();
+        setOutPlayers(response);
+      } catch (error) {
+        console.error("Failed to fetch players", error);
+      }
+    };
+
+    fetchPlayers();
     fetchGuilds();
   }, []);
 
   const generateBalancedGuilds = () => {
-    console.log('maxPLayers', maxPlayers)
     balancedPlayersRoute(maxPlayers).then((response) => {
       setGuilds(response);
     }).catch((error) => {
@@ -48,6 +62,10 @@ const BalanceGuilds = () => {
       console.error("Failed to reset guilds", error);
     }
   };
+
+  const handleGoBack = () => {
+    navigate("/");
+  };
   
   return (
     <BalanceGuildsContainer>
@@ -56,6 +74,7 @@ const BalanceGuilds = () => {
         <ButtonContainer>
           <Button onClick={generateBalancedGuilds}>Gerar Guildas Balanceadas</Button>
           <Button onClick={resetGuilds}>Resetar guildas</Button>
+          <Button onClick={handleGoBack}>voltar</Button>
         </ButtonContainer>
         <InputContainer>
           {'Selecione o número máximo de players (mínimo 3):'}
@@ -87,6 +106,20 @@ const BalanceGuilds = () => {
               </TableCell>
             </tr>
           ))}
+        </tbody>
+      </Table>
+      <Table>
+        <thead>
+          <tr>
+            <TableHeader>Jogadores</TableHeader>
+          </tr>
+        </thead>
+        <tbody>
+        <TableCell>{outPlayers.map((player) => (
+            <div key={player.name}>
+            {player.name} ({player.class} - {player.experience} XP)
+          </div>
+          ))}</TableCell>
         </tbody>
       </Table>
     </BalanceGuildsContainer>

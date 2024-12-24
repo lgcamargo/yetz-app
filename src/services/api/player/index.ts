@@ -5,7 +5,7 @@ import { CreatePlayer, Player } from "./types";
 const apiClient = new ApiClient(import.meta.env.VITE_APP_API_URL || "");
 
 export const getPlayersRoute = (): Promise<Player[]> => 
-  apiClient.get('/players').then(response => response.data as Player[]);
+  apiClient.get('/player').then(response => response.data as Player[]);
 
 export const getPlayerRoute = (id: string): Promise<Player> => 
   apiClient.get(`/player/${id}`).then(response => response.data as Player);

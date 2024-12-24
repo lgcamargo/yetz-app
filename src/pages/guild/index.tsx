@@ -26,7 +26,6 @@ const CreateGuild = () => {
     });
   };
 
-  
   const handleGoBack = () => {
     navigate("/");
   };
