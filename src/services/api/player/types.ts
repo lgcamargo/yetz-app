@@ -1,8 +1,8 @@
 export enum ClassEnum {
-  Mago = 'Mago',
-  Guerreiro = 'Guerreiro',
-  Arqueiro = 'Arqueiro',
-  Clérico = 'Clérico',
+  Mago = 'MAGO',
+  Guerreiro = 'GUERREIRO',
+  Arqueiro = 'ARQUEIRO',
+  Clérigo = 'CLÉRIGO',
 }
 
 export type CreatePlayer = {

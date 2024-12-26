@@ -13,7 +13,7 @@ import { ClassEnum, CreatePlayer as CreateType } from "../../services/api/player
 
 const CreatePlayer = () => {
   const [name, setName] = useState("");
-  const [className, setClassName] = useState("CLÉRICO");
+  const [className, setClassName] = useState<ClassEnum>(ClassEnum.Clérigo);
   const [experience, setExperience] = useState(1);
 
   const navigate = useNavigate();
@@ -51,12 +51,12 @@ const CreatePlayer = () => {
           {"Classe:"}
           <Select
             value={className}
-            onChange={(e) => setClassName(e.target.value)}
+            onChange={(e) => setClassName(e.target.value as ClassEnum)}
           >
-            <option value="CLÉRICO">Clérico</option>
-            <option value="GUERREIRO">Guerreiro</option>
-            <option value="ARQUEIRO">Arqueiro</option>
-            <option value="MAGO">Mago</option>
+            <option value={ClassEnum.Clérigo}>Clérigo</option>
+            <option value={ClassEnum.Guerreiro}>Guerreiro</option>
+            <option value={ClassEnum.Arqueiro}>Arqueiro</option>
+            <option value={ClassEnum.Mago}>Mago</option>
           </Select>
           {"Experiência:"}
           <Input
