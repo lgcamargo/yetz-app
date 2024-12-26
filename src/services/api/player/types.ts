@@ -22,3 +22,8 @@ export type Player = {
   updatedAt: string;
   deletedAt: string | null;
 }
+
+export type BalancedPlayers = {
+  maxGuildPlayer: number;
+  selectedPlayers: Player[];
+}

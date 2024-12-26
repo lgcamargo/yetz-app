@@ -11,7 +11,11 @@ import {
   StyledInfo,
   InputContainer,
 } from "./styles";
-import { balancedPlayersRoute, getPlayersRoute, resetPlayersGuildRoute } from "../../services/api/player";
+import {
+  balancedPlayersRoute,
+  getPlayersRoute,
+  resetPlayersGuildRoute,
+} from "../../services/api/player";
 import { useNavigate } from "react-router-dom";
 import { Player } from "../../services/api/player/types";
 
@@ -19,6 +23,7 @@ const BalanceGuilds = () => {
   const [guilds, setGuilds] = React.useState<Guild[]>([]);
   const [outPlayers, setOutPlayers] = React.useState<Player[]>([]);
   const [maxPlayers, setMaxPlayers] = React.useState<number>(0);
+  const [selectedPlayers, setSelectedPlayers] = React.useState<Set<string>>(new Set());
 
   const navigate = useNavigate();
 
@@ -45,12 +50,32 @@ const BalanceGuilds = () => {
     fetchGuilds();
   }, []);
 
-  const generateBalancedGuilds = () => {
-    balancedPlayersRoute(maxPlayers).then((response) => {
-      setGuilds(response);
-    }).catch((error) => {
-      console.error("Failed to generate balanced guilds", error);
+  const togglePlayerSelection = (playerId: string) => {
+    setSelectedPlayers((prevSelected) => {
+      const updatedSelection = new Set(prevSelected);
+      if (updatedSelection.has(playerId)) {
+        updatedSelection.delete(playerId);
+      } else {
+        updatedSelection.add(playerId);
+      }
+      return updatedSelection;
     });
+  };
+
+  const generateBalancedGuilds = async () => {
+    try {
+      const selectedPlayersArray = Array.from(selectedPlayers).map((id) =>
+        outPlayers.find((player) => player.id === id)
+      ) as Player[];
+
+      const response = await balancedPlayersRoute({
+        maxGuildPlayer: maxPlayers,
+        selectedPlayers: selectedPlayersArray,
+      });
+      setGuilds(response);
+    } catch (error) {
+      console.error("Failed to generate balanced guilds", error);
+    }
   };
 
   const resetGuilds = async () => {
@@ -66,26 +91,28 @@ const BalanceGuilds = () => {
   const handleGoBack = () => {
     navigate("/");
   };
-  
+
   return (
     <BalanceGuildsContainer>
       <h1>Guildas Balanceadas</h1>
       <StyledInfo>
         <ButtonContainer>
           <Button onClick={generateBalancedGuilds}>Gerar Guildas Balanceadas</Button>
-          <Button onClick={resetGuilds}>Resetar guildas</Button>
-          <Button onClick={handleGoBack}>voltar</Button>
+          <Button onClick={resetGuilds}>Resetar Guildas</Button>
+          <Button onClick={handleGoBack}>Voltar</Button>
         </ButtonContainer>
         <InputContainer>
-          {'Selecione o número máximo de players (mínimo 3):'}
+          {"Selecione o número máximo de players por guilda (mínimo 3):"}
           <input
             type="number"
             id="maxPlayers"
             name="maxPlayers"
+            min={3}
             onChange={(e) => setMaxPlayers(Number(e.target.value))}
           />
         </InputContainer>
       </StyledInfo>
+      <h2>Lista de Guildas</h2>
       <Table>
         <thead>
           <tr>
@@ -99,7 +126,7 @@ const BalanceGuilds = () => {
               <TableCell>{guild.name}</TableCell>
               <TableCell>
                 {guild.players.map((player) => (
-                  <div key={player.name}>
+                  <div key={player.id}>
                     {player.name} ({player.class} - {player.experience} XP)
                   </div>
                 ))}
@@ -108,6 +135,7 @@ const BalanceGuilds = () => {
           ))}
         </tbody>
       </Table>
+      <h2>Jogadores Fora das Guildas</h2>
       <Table>
         <thead>
           <tr>
@@ -115,11 +143,20 @@ const BalanceGuilds = () => {
           </tr>
         </thead>
         <tbody>
-        <TableCell>{outPlayers.map((player) => (
-            <div key={player.name}>
-            {player.name} ({player.class} - {player.experience} XP)
-          </div>
-          ))}</TableCell>
+          {outPlayers.map((player) => (
+            <tr key={player.id}>
+              <TableCell>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={selectedPlayers.has(player.id)}
+                    onChange={() => togglePlayerSelection(player.id)}
+                  />
+                  {player.name} ({player.class} - {player.experience} XP)
+                </label>
+              </TableCell>
+            </tr>
+          ))}
         </tbody>
       </Table>
     </BalanceGuildsContainer>
