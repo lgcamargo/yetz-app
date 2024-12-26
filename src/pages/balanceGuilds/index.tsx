@@ -24,6 +24,7 @@ const BalanceGuilds = () => {
   const [outPlayers, setOutPlayers] = React.useState<Player[]>([]);
   const [maxPlayers, setMaxPlayers] = React.useState<number>(0);
   const [selectedPlayers, setSelectedPlayers] = React.useState<Set<string>>(new Set());
+  const [errorMessage, setErrorMessage] = React.useState<string>("");
 
   const navigate = useNavigate();
 
@@ -74,8 +75,10 @@ const BalanceGuilds = () => {
       });
       setSelectedPlayers(new Set());
       setGuilds(response);
-    } catch (error) {
-      console.error("Failed to generate balanced guilds", error);
+      setErrorMessage("");
+    } catch (error: any) {
+      const errorMessage = JSON.parse(error.request.response);
+      setErrorMessage(`Failed to generate balanced guilds motive: ${errorMessage.message}`);
     }
   };
 
@@ -96,6 +99,7 @@ const BalanceGuilds = () => {
   return (
     <BalanceGuildsContainer>
       <h1>Guildas Balanceadas</h1>
+      {errorMessage && <div style={{ color: "red", marginBottom: "20px" }}>{errorMessage}</div>}
       <StyledInfo>
         <ButtonContainer>
           <Button onClick={generateBalancedGuilds}>Gerar Guildas Balanceadas</Button>
@@ -136,6 +140,7 @@ const BalanceGuilds = () => {
           ))}
         </tbody>
       </Table>
+
       <h2>Jogadores Fora das Guildas</h2>
       <Table>
         <thead>
