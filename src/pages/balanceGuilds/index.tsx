@@ -72,6 +72,7 @@ const BalanceGuilds = () => {
         maxGuildPlayer: maxPlayers,
         selectedPlayers: selectedPlayersArray,
       });
+      setSelectedPlayers(new Set());
       setGuilds(response);
     } catch (error) {
       console.error("Failed to generate balanced guilds", error);
