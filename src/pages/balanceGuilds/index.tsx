@@ -70,7 +70,7 @@ const BalanceGuilds = () => {
       ) as Player[];
 
       const response = await balancedPlayersRoute({
-        maxGuildPlayer: maxPlayers,
+        maxGuildPlayers: maxPlayers,
         selectedPlayers: selectedPlayersArray,
       });
       setSelectedPlayers(new Set());

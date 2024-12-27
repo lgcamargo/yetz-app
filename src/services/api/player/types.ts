@@ -24,6 +24,6 @@ export type Player = {
 }
 
 export type BalancedPlayers = {
-  maxGuildPlayer: number;
+  maxGuildPlayers: number;
   selectedPlayers: Player[];
 }
